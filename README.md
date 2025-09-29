@@ -1,0 +1,1 @@
+# This project's purpose is to parse a website's robots.txt and identify what can and cannot be web scraped

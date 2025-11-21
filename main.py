@@ -28,32 +28,33 @@ def get_links(text):
         return links
 
 
-load_dotenv()
-gemini_key = os.getenv("GEMINI_API_KEY")
-system_instruction = """
-From the given string, identify what is and is not allowed to be scraped on a websie according to their robots.txt.
+def check_robot_txt(url):
 
-What you need to provide is just a string of what is and isn't allowed.
-"""
+    load_dotenv()
+    gemini_key = os.getenv("GEMINI_API_KEY")
+    system_instruction = """
+    From the given robots.txt text string, identify if webstracping is allowed on a website.
 
-website = input("Submit a website: ")
-website = input_checker(website)
+    What you need to provide is a string that is either "Allowed" or "Not Allowed".
+    """
 
-text, links = parse_robots(website)
+    website = input("Submit a website: ")
+    website = input_checker(website)
 
-client = genai.Client(api_key=gemini_key)
-model_name = "gemini-2.5-flash"
+    text, links = parse_robots(website)
 
+    client = genai.Client(api_key=gemini_key)
+    model_name = "gemini-2.5-flash"
 
-if links is not None:
-    for link in links:
-        parse_robots(link)
-else:
-    response = client.models.generate_content(
-        model=model_name,
-        config=types.GenerateContentConfig(
-            system_instruction=system_instruction),
-        contents=text
-    )
+    if links is not None:
+        for link in links:
+            parse_robots(link)
+    else:
+        response = client.models.generate_content(
+            model=model_name,
+            config=types.GenerateContentConfig(
+                system_instruction=system_instruction),
+            contents=text
+        )
 
-print(response.text)
+    return (response.text)
